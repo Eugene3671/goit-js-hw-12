@@ -1,10 +1,7 @@
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
 
-let gallery = new SimpleLightbox('.gallery a');
-    gallery.on('show.simplelightbox', function () {});
+import { refs } from "./ref";
 
-const galleryEl = document.querySelector('.gallery');
+
 export function createGallery(images) {
     const markup = images.map(img => `<li class="photo-card">
           <a href="${img.largeImageURL}"><img src="${img.webformatURL}" alt="${img.tags}" />
@@ -16,18 +13,20 @@ export function createGallery(images) {
           </div>
           </a>
         </li>`).join('\n');
-    galleryEl.innerHTML = markup;
-      gallery.refresh();
+  return markup;
 }
 export function clearGallery() {
-        galleryEl.innerHTML = '';
+        refs.galleryEl.innerHTML = '';
 }
-
-const loaderEl = document.querySelector('.loader');
-
 export function showLoader() {
-    loaderEl.classList.remove('hidden');
+    refs.loaderEl.classList.remove('hidden');
 }
 export function hideLoader() {
-    loaderEl.classList.add('hidden');
+    refs.loaderEl.classList.add('hidden');
+}
+export function showLoadMoreButton() {
+    refs.btnLoadMoreEl.classList.remove('hidden');
+}
+export function hideLoadMoreButton() {
+    refs.btnLoadMoreEl.classList.add('hidden');
 }
