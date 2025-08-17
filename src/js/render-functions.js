@@ -1,7 +1,6 @@
 
 import { refs } from "./ref";
 
-
 export function createGallery(images) {
     const markup = images.map(img => `<li class="photo-card">
           <a href="${img.largeImageURL}"><img src="${img.webformatURL}" alt="${img.tags}" />
