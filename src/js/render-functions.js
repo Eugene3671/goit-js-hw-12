@@ -1,7 +1,13 @@
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 import { refs } from "./ref";
 
-export function createGallery(images) {
+let gallery = new SimpleLightbox('.gallery a');
+    gallery.on('show.simplelightbox', function () {});
+
+
+export function createGallery(images, status) {
     const markup = images.map(img => `<li class="photo-card">
           <a href="${img.largeImageURL}"><img src="${img.webformatURL}" alt="${img.tags}" />
           <div class="info">
@@ -12,7 +18,12 @@ export function createGallery(images) {
           </div>
           </a>
         </li>`).join('\n');
-  return markup;
+    if (status === 'replace') {
+         refs.galleryEl.innerHTML = markup;
+    }else if (status === 'append') {
+    refs.galleryEl.insertAdjacentHTML('beforeend', markup);
+    }
+    gallery.refresh();
 }
 export function clearGallery() {
         refs.galleryEl.innerHTML = '';

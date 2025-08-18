@@ -3,12 +3,6 @@ import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 import { clearGallery, createGallery, hideLoader, hideLoadMoreButton, showLoader, showLoadMoreButton } from "./js/render-functions";
 import { refs } from "./js/ref";
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
-
-let gallery = new SimpleLightbox('.gallery a');
-    gallery.on('show.simplelightbox', function () {});
-
 
 
 let inputValue;
@@ -21,27 +15,31 @@ refs.formEL.addEventListener('submit', async (e) => {
     e.preventDefault();
     inputValue = e.target.elements.searchText.value.trim();
     page = 1;
+    if (inputValue === '') {
+         iziToast.error({
+                title: 'Enter value',
+                position: 'bottomRight'
+         });
+        return;
+    }
+        hideLoadMoreButton();
     clearGallery();
-    hideLoadMoreButton();
     showLoader();
     try {
         const res = await getImagesByQuery(inputValue, page)
-        const markup = createGallery(res.hits);
-        refs.galleryEl.innerHTML = markup;
-  gallery.refresh();
-
+       createGallery(res.hits, 'replace');
         maxPage = Math.ceil(res.totalHits / PAGE_SIZE);
-        hideLoader();
         
     } catch {
          iziToast.error({
                 title: 'Error',
                 position: 'bottomRight'
          });
+    } finally {
         hideLoader();
-    }
-    showNotification();
+        showNotification();
     checkBtnLoadMoreVisible();
+    }
     e.target.reset();
 })
 
@@ -49,15 +47,12 @@ refs.formEL.addEventListener('submit', async (e) => {
 
 refs.btnLoadMoreEl.addEventListener('click', async () => {
     page += 1;
-        checkBtnLoadMoreVisible();
+            hideLoadMoreButton();
     showNotification();
     showLoader();
     try {
         const res = await getImagesByQuery(inputValue, page)
-        const markup = createGallery(res.hits);
-        refs.galleryEl.insertAdjacentHTML('beforeend', markup);
-
-          gallery.refresh();
+        createGallery(res.hits, 'append');
 
         const firstCard = document.querySelector('.photo-card');
         if (firstCard) {
@@ -67,14 +62,16 @@ refs.btnLoadMoreEl.addEventListener('click', async () => {
                 behavior: 'smooth'
             });
         }
-        hideLoader();
         
     } catch {
          iziToast.error({
                 title: 'Error',
                 position: 'bottomRight'
          });
-        hideLoader();
+    } finally {
+                hideLoader();
+                checkBtnLoadMoreVisible();
+
     }
 })
 
